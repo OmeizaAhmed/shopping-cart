@@ -4,7 +4,7 @@ type storeDataType = {
   id: number;
   title: string;
   price: number;
-  category: { image: string };
+  thumbnail: string;
 };
 
 export default function Home() {
@@ -15,16 +15,16 @@ export default function Home() {
   async function fetchStoreData() {
     try {
       setLoading(true);
-      const res = await fetch("https://api.escuelajs.co/api/v1/products");
+      const res = await fetch("https://dummyjson.com/products");
       if (!res.ok) {
         throw new Error(`Error fetching Data: ${res.status} status code`);
       }
-      const data = await res.json();
-      const neededData = data.map((data: storeDataType) => ({
+      const { products } = await res.json();
+      const neededData = products.map((data: storeDataType) => ({
         id: data.id,
         title: data.title,
         price: data.price,
-        image_src: data.category.image,
+        image_src: data.thumbnail,
       }));
       console.log(neededData);
       setLoading(false);
@@ -44,5 +44,3 @@ export default function Home() {
   if (error) return <div>{error}</div>;
   return <div>This is the Home page</div>;
 }
-
-
