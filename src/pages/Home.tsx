@@ -1,14 +1,23 @@
 import { useEffect, useState } from "react";
+import ProductCard from "../components/ProductCard";
+import { Circles } from "react-loader-spinner";
 
-type storeDataType = {
+export type storeDataType = {
   id: number;
   title: string;
   price: number;
   thumbnail: string;
 };
 
+export type productType = {
+  id: number;
+  title: string;
+  price: number;
+  image_src: string;  
+}
+
 export default function Home() {
-  const [storeData, setStoreData] = useState([]);
+  const [storeData, setStoreData] = useState<productType[] | []>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,13 +29,14 @@ export default function Home() {
         throw new Error(`Error fetching Data: ${res.status} status code`);
       }
       const { products } = await res.json();
-      const neededData = products.map((data: storeDataType) => ({
+      const neededData: productType[] = products.map((data: storeDataType) => ({
         id: data.id,
         title: data.title,
         price: data.price,
         image_src: data.thumbnail,
       }));
-      console.log(neededData);
+      setStoreData(neededData);
+      console.log(neededData)
       setLoading(false);
     } catch (e) {
       setLoading(false);
@@ -40,7 +50,11 @@ export default function Home() {
     fetchStoreData();
   }, []);
 
-  if (loading) return <div>Loading... Please wait</div>;
+  if (loading) return <div className="w-fit mx-auto mt-20"><Circles height={80} width={80} color="pink"/></div>;
   if (error) return <div>{error}</div>;
-  return <div>This is the Home page</div>;
+  return (
+    <div className="w-4/5 mx-auto grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">{storeData ? storeData.map((product: productType) =>(
+      <ProductCard product={product} key={product.id}/>
+    )):null}</div>
+  )
 }
